@@ -67,14 +67,14 @@ const chess = {
     const side = Math.sign(board[pos]);
     const moves = [];
 
-    for (let i = 0; i < knightOffset.length; i += 1) {
-      const xSide = Math.sign(board[pos + knightOffset[i]]);
-      if (board[pos + knightOffset[i]] !== 7) {
-        if (board[pos + knightOffset[i]] === 0 || side !== xSide) {
-          moves.push(pos + knightOffset[i]);
+    knightOffset.forEach((jump) => {
+      const xSide = Math.sign(board[pos + jump]);
+      if (board[pos + jump] !== 7) {
+        if (board[pos + jump] === 0 || side !== xSide) {
+          moves.push(pos + jump);
         }
       }
-    }
+    });
     return moves;
   },
 
@@ -82,19 +82,38 @@ const chess = {
     const offset = [-11, -10, -9, -1, 1, 9, 10, 11];
     const side = Math.sign(board[pos]);
     const moves = [];
-    for (let i = 0; i < offset.length; i += 1) {
-      const xSide = Math.sign(board[pos + offset[i]]);
-      if (board[pos + offset[i]] !== 7 || side === xSide) {
-        if (board[pos + offset[i]] === 0 || side !== xSide) {
-          moves.push(pos + offset[i]);
+
+    offset.forEach((move) => {
+      const xSide = Math.sign(board[pos + move]);
+      if (board[pos + move] !== 7 || side === xSide) {
+        if (board[pos + move] === 0 || side !== xSide) {
+          moves.push(pos + move);
         }
       }
-    }
+    });
+
+    // for (let i = 0; i < offset.length; i += 1) {
+    //   const xSide = Math.sign(board[pos + offset[i]]);
+    //   if (board[pos + offset[i]] !== 7 || side === xSide) {
+    //     if (board[pos + offset[i]] === 0 || side !== xSide) {
+    //       moves.push(pos + offset[i]);
+    //     }
+    //   }
+    // }
     return moves;
   },
 
   generatePawnMoves(board, pos) {
+    const side = Math.sign(board[pos]);
+    const moves = [];
 
+    if (side === 1) {
+      const offset = [10, 20, 9, 11];
+      
+    } else if (side === -1) {
+      const offset = [-10, -20, -9, -11];
+    }
+    return moves;
   },
 
   evaluateBoard() {
