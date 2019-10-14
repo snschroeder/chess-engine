@@ -85,21 +85,12 @@ const chess = {
 
     offset.forEach((move) => {
       const xSide = Math.sign(board[pos + move]);
-      if (board[pos + move] !== 7 || side === xSide) {
+      if (board[pos + move] !== 7) {
         if (board[pos + move] === 0 || side !== xSide) {
           moves.push(pos + move);
         }
       }
     });
-
-    // for (let i = 0; i < offset.length; i += 1) {
-    //   const xSide = Math.sign(board[pos + offset[i]]);
-    //   if (board[pos + offset[i]] !== 7 || side === xSide) {
-    //     if (board[pos + offset[i]] === 0 || side !== xSide) {
-    //       moves.push(pos + offset[i]);
-    //     }
-    //   }
-    // }
     return moves;
   },
 
@@ -108,10 +99,43 @@ const chess = {
     const moves = [];
 
     if (side === 1) {
-      const offset = [10, 20, 9, 11];
-      
+      const offset = [10];
+      const captures = [9, 11];
+      if (pos >= 31 && pos <= 38) {
+        offset.push(20);
+      }
+
+      offset.forEach((move) => {
+        const xSide = Math.sign(board[pos + move]);
+        if (board[pos + move] !== 7 && xSide !== side) {
+          moves.push(pos + move);
+        }
+      });
+      captures.forEach((move) => {
+        const xSide = Math.sign(board[pos + move]);
+        if (board[pos + move] !== 7 && side !== xSide && board[pos + move] !== 0) {
+          moves.push(pos + move);
+        }
+      });
     } else if (side === -1) {
-      const offset = [-10, -20, -9, -11];
+      const offset = [-10];
+      const captures = [-9, -11];
+      if (pos >= 81 && pos <= 88) {
+        offset.push(-20);
+      }
+
+      offset.forEach((move) => {
+        const xSide = Math.sign(board[pos + move]);
+        if (board[pos + move] !== 7 && xSide !== side) {
+          moves.push(pos + move);
+        }
+      });
+      captures.forEach((move) => {
+        const xSide = Math.sign(board[pos + move]);
+        if (board[pos + move] !== 7 && side !== xSide && board[pos + move] !== 0) {
+          moves.push(pos + move);
+        }
+      });
     }
     return moves;
   },
