@@ -129,3 +129,82 @@ describe('generateKingMoves test', () => {
     expect(e6Moves).to.eql([64, 66, 74, 76, 84, 85, 86]);
   });
 });
+
+describe('generatePawnMoves tests', () => {
+  it('Generates the 2 correct moves for each white pawn in the starting position', () => {
+    const a2Moves = chess.generatePawnMoves(boards.board, 31);
+    const b2Moves = chess.generatePawnMoves(boards.board, 32);
+    const c2Moves = chess.generatePawnMoves(boards.board, 33);
+    const d2Moves = chess.generatePawnMoves(boards.board, 34);
+    const e2Moves = chess.generatePawnMoves(boards.board, 35);
+    const f2Moves = chess.generatePawnMoves(boards.board, 36);
+    const g2Moves = chess.generatePawnMoves(boards.board, 37);
+    const h2Moves = chess.generatePawnMoves(boards.board, 38);
+    expect(boards.board[31]).to.eql(1);
+    expect(boards.board[32]).to.eql(1);
+    expect(boards.board[33]).to.eql(1);
+    expect(boards.board[34]).to.eql(1);
+    expect(boards.board[35]).to.eql(1);
+    expect(boards.board[36]).to.eql(1);
+    expect(boards.board[37]).to.eql(1);
+    expect(boards.board[38]).to.eql(1);
+    expect(a2Moves).to.eql([41, 51]);
+    expect(b2Moves).to.eql([42, 52]);
+    expect(c2Moves).to.eql([43, 53]);
+    expect(d2Moves).to.eql([44, 54]);
+    expect(e2Moves).to.eql([45, 55]);
+    expect(f2Moves).to.eql([46, 56]);
+    expect(g2Moves).to.eql([47, 57]);
+    expect(h2Moves).to.eql([48, 58]);
+  });
+  it('Generates the 2 correct moves for each black pawn in the starting position', () => {
+    const a7Moves = chess.generatePawnMoves(boards.board, 81);
+    const b7Moves = chess.generatePawnMoves(boards.board, 82);
+    const c7Moves = chess.generatePawnMoves(boards.board, 83);
+    const d7Moves = chess.generatePawnMoves(boards.board, 84);
+    const e7Moves = chess.generatePawnMoves(boards.board, 85);
+    const f7Moves = chess.generatePawnMoves(boards.board, 86);
+    const g7Moves = chess.generatePawnMoves(boards.board, 87);
+    const h7Moves = chess.generatePawnMoves(boards.board, 88);
+    expect(boards.board[81]).to.eql(-1);
+    expect(boards.board[82]).to.eql(-1);
+    expect(boards.board[83]).to.eql(-1);
+    expect(boards.board[84]).to.eql(-1);
+    expect(boards.board[85]).to.eql(-1);
+    expect(boards.board[86]).to.eql(-1);
+    expect(boards.board[87]).to.eql(-1);
+    expect(boards.board[88]).to.eql(-1);
+    expect(a7Moves).to.eql([71, 61]);
+    expect(b7Moves).to.eql([72, 62]);
+    expect(c7Moves).to.eql([73, 63]);
+    expect(d7Moves).to.eql([74, 64]);
+    expect(e7Moves).to.eql([75, 65]);
+    expect(f7Moves).to.eql([76, 66]);
+    expect(g7Moves).to.eql([77, 67]);
+    expect(h7Moves).to.eql([78, 68]);
+  });
+
+  it('Does not allow 2 square move for white when not on 2nd rank', () => {
+    const a3Moves = chess.generatePawnMoves(boards.pawnTestOne, 41);
+    const h4Moves = chess.generatePawnMoves(boards.pawnTestOne, 58);
+    expect(boards.pawnTestOne[41]).to.eql(1);
+    expect(boards.pawnTestOne[58]).to.eql(1);
+    expect(a3Moves).to.eql([51]);
+    expect(h4Moves).to.eql([68]);
+  });
+  it('Does not allow 2 square move for black when not on 7nd rank', () => {
+    const a6Moves = chess.generatePawnMoves(boards.pawnTestOne, 71);
+    expect(boards.pawnTestOne[71]).to.eql(-1);
+    expect(a6Moves).to.eql([61]);
+  });
+  it('Generates white pawn capture moves and forward moves when appropriate', () => {
+    const e6Moves = chess.generatePawnMoves(boards.pawnTestOne, 75);
+    expect(boards.pawnTestOne[75]).to.eql(1);
+    expect(e6Moves).to.eql([85, 84, 86]);
+  });
+  it('Generates black pawn capture moves and forward moves when appropriate', () => {
+    const c3Moves = chess.generatePawnMoves(boards.pawnTestOne, 43);
+    expect(boards.pawnTestOne[43]).to.eql(-1);
+    expect(c3Moves).to.eql([33, 34, 32]);
+  })
+});

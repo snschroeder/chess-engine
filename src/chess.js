@@ -107,7 +107,7 @@ const chess = {
 
       offset.forEach((move) => {
         const xSide = Math.sign(board[pos + move]);
-        if (board[pos + move] !== 7 && xSide !== side) {
+        if (board[pos + move] !== 7 && xSide === 0) {
           moves.push(pos + move);
         }
       });
