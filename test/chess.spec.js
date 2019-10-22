@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable no-undef */
 const { expect } = require('chai');
 const chess = require('../src/chess');
@@ -206,5 +207,42 @@ describe('generatePawnMoves tests', () => {
     const c3Moves = chess.generatePawnMoves(boards.pawnTestOne, 43);
     expect(boards.pawnTestOne[43]).to.eql(-1);
     expect(c3Moves).to.eql([33, 34, 32]);
-  })
+  });
+});
+
+describe('generateMoves test', () => {
+  it('correctly generates all white moves in start position', () => {
+    const whiteMoves = chess.generateMoves(boards.board, 'w');
+    let moveCount = 0;
+    const moves = [];
+    whiteMoves.forEach((piece) => {
+      moveCount += piece.moves.length;
+    });
+    whiteMoves.forEach((piece) => moves.push(...piece.moves));
+    expect(moveCount).to.eql(20);
+    expect(whiteMoves.length).to.eql(16);
+    expect(moves).to.eql([43, 41, 48, 46, 41, 51, 42, 52, 43, 53, 44, 54, 45, 55, 46, 56, 47, 57, 48, 58]);
+  });
+  it('correctly generates all black moves in start position', () => {
+    const blackMoves = chess.generateMoves(boards.board, 'b');
+    let moveCount = 0;
+    const moves = [];
+    blackMoves.forEach((piece) => {
+      moveCount += piece.moves.length;
+    });
+    blackMoves.forEach((piece) => moves.push(...piece.moves));
+    expect(moveCount).to.eql(20);
+    expect(blackMoves.length).to.eql(16);
+    expect(moves).to.eql([71, 61, 72, 62, 73, 63, 74, 64, 75, 65, 76, 66, 77, 67, 78, 68, 73, 71, 78, 76]);
+  });
+  it('correctly generates white moves from arbitrary position', () => {
+    const whiteMoves = chess.generateMoves(boards.movementTest, 'w');
+
+    expect(whiteMoves.length).to.eql(15);
+  });
+  it('correctly generates black moves from arbitrary position', () => {
+    const blackMoves = chess.generateMoves(boards.movementTest, 'b');
+
+    expect(blackMoves.length).to.eql(14);
+  });
 });

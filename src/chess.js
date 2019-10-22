@@ -5,6 +5,15 @@ const chess = {
   black: 'b',
   white: 'w',
 
+  pieces: {
+    1: 'p',
+    3: 'n',
+    4: 'b',
+    5: 'r',
+    9: 'q',
+    10: 'k',
+  },
+
   board: [
     7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
     7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
@@ -143,9 +152,50 @@ const chess = {
   evaluateBoard() {
     return this.board.reduce((a, b) => a + b) - 1127;
   },
-  // generateMoves(color) {
 
-  // },
+  generateMoves(board, color) {
+    const side = color === 'w' ? 1 : -1;
+    const moves = [];
+    board.forEach((square, index) => {
+      if (square !== 7) {
+        const pieceObj = {
+          piece: `${this.pieces[square * side]}${this.squares[index]}`,
+          moves: [],
+        };
+        switch (square * side) {
+          case 1:
+            pieceObj.moves = this.generatePawnMoves(board, index);
+            moves.push(pieceObj);
+            break;
+          case 3:
+            pieceObj.moves = this.generateKnightMoves(board, index);
+            moves.push(pieceObj);
+            break;
+          case 4:
+            pieceObj.moves = this.generateSlidingMoves(board, index, this.bishopOffset);
+            moves.push(pieceObj);
+            break;
+          case 5:
+            pieceObj.moves = this.generateSlidingMoves(board, index, this.rookOffset);
+            moves.push(pieceObj);
+            break;
+          case 9:
+            pieceObj.moves = this.generateSlidingMoves(board, index, this.omniOffset);
+            moves.push(pieceObj);
+            break;
+          case 10:
+            pieceObj.moves = this.generateKingMoves(board, index);
+            moves.push(pieceObj);
+            break;
+          default:
+            break;
+        }
+      }
+    });
+    return moves;
+  },
+
+
   // checkForCheck(color) {
 
   // },
@@ -181,7 +231,7 @@ const chess = {
 };
 
 
-console.log(chess.generateKingMoves(chess.board, 24, chess.omniOffset));
+console.log(chess.generateMoves(chess.board, 'b'));
 
 
 module.exports = chess;
