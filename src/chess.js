@@ -107,12 +107,15 @@ const chess = {
   generatePawnMoves(board, pos) {
     const side = Math.sign(board[pos]);
     const moves = [];
-    if (side === 1) {
-      const offset = [10];
-      const captures = [9, 11];
+      let offset = [10];
+      let captures = [9, 11];
       if (pos >= 31 && pos <= 38 && board[pos + 10] === 0) {
         offset.push(20);
-      }
+      } else if (pos >= 81 && pos <= 88 && board[pos - 10] === 0) {
+        offset.push(20);
+      };
+      offset = offset.map((val) => val * side);
+      captures = captures.map((val) => val* side);
       offset.forEach((move) => {
         const xSide = Math.sign(board[pos + move]);
         if (board[pos + move] !== 7 && xSide === 0) {
@@ -125,25 +128,6 @@ const chess = {
           moves.push(pos + move);
         }
       });
-    } else if (side === -1) {
-      const offset = [-10];
-      const captures = [-9, -11];
-      if (pos >= 81 && pos <= 88 && board[pos - 10] === 0) {
-        offset.push(-20);
-      }
-      offset.forEach((move) => {
-        const xSide = Math.sign(board[pos + move]);
-        if (board[pos + move] !== 7 && xSide !== side) {
-          moves.push(pos + move);
-        }
-      });
-      captures.forEach((move) => {
-        const xSide = Math.sign(board[pos + move]);
-        if (board[pos + move] !== 7 && side !== xSide && board[pos + move] !== 0) {
-          moves.push(pos + move);
-        }
-      });
-    }
     return moves;
   },
 
@@ -215,9 +199,17 @@ const chess = {
     return cleanMoves;
   },
 
-  // isValidMove(move) {
+  genDirtyLegalMoves(board, moveColor) {
+    const moves = this.generateAllLegalMoves(board, moveColor);
+    const dirtyMoves = [];
+    moves.forEach(piece => dirtyMoves.push(...piece.splice(2)));
+    return dirtyMoves;
+  },
 
-  // },
+  isValidMove(board, moveColor, move) {
+    const moves = this.genDirtyLegalMoves(board, moveColor);
+    return moves.includes(move);
+  },
   // turn(piece, move) {
 
   // },
@@ -240,10 +232,12 @@ const chess = {
   // },
 };
 
-console.log(chess.generateMoves(boards.checkTest, 'w'));
-console.log(' ');
-console.log(chess.generateAllLegalMoves(boards.checkTest, 'w'));
+// console.log(chess.generateMoves(chess.board, 'w'));
+// console.log(' ');
+// console.log(chess.generateAllLegalMoves(chess.board, 'w'));
 // console.log(chess.genDirtyMovesAlt(boards.board, 'w'));
+
+console.log(chess.isValidMove(boards.board, 'w', 3));
 
 
 module.exports = chess;
@@ -367,3 +361,45 @@ module.exports = chess;
 //   });
 //   return moves;
 // },
+  // generatePawnMovesAlt(board, pos) {
+  //   const side = Math.sign(board[pos]);
+  //   const moves = [];
+  //   if (side === 1) {
+  //     const offset = [10];
+  //     const captures = [9, 11];
+  //     if (pos >= 31 && pos <= 38 && board[pos + 10] === 0) {
+  //       offset.push(20);
+  //     }
+  //     offset.forEach((move) => {
+  //       const xSide = Math.sign(board[pos + move]);
+  //       if (board[pos + move] !== 7 && xSide === 0) {
+  //         moves.push(pos + move);
+  //       }
+  //     });
+  //     captures.forEach((move) => {
+  //       const xSide = Math.sign(board[pos + move]);
+  //       if (board[pos + move] !== 7 && side !== xSide && board[pos + move] !== 0) {
+  //         moves.push(pos + move);
+  //       }
+  //     });
+  //   } else if (side === -1) {
+  //     const offset = [-10];
+  //     const captures = [-9, -11];
+  //     if (pos >= 81 && pos <= 88 && board[pos - 10] === 0) {
+  //       offset.push(-20);
+  //     }
+  //     offset.forEach((move) => {
+  //       const xSide = Math.sign(board[pos + move]);
+  //       if (board[pos + move] !== 7 && xSide !== side) {
+  //         moves.push(pos + move);
+  //       }
+  //     });
+  //     captures.forEach((move) => {
+  //       const xSide = Math.sign(board[pos + move]);
+  //       if (board[pos + move] !== 7 && side !== xSide && board[pos + move] !== 0) {
+  //         moves.push(pos + move);
+  //       }
+  //     });
+  //   }
+  //   return moves;
+  // },
