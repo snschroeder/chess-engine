@@ -1,5 +1,6 @@
+/* eslint-disable max-len */
 /* eslint-disable object-property-newline */
-// const boards = require('../test/test-helpers')
+const boards = require('../test/test-helpers');
 
 const chess = {
   black: 'b',
@@ -106,14 +107,12 @@ const chess = {
   generatePawnMoves(board, pos) {
     const side = Math.sign(board[pos]);
     const moves = [];
-
     if (side === 1) {
       const offset = [10];
       const captures = [9, 11];
-      if (pos >= 31 && pos <= 38) {
+      if (pos >= 31 && pos <= 38 && board[pos + 10] === 0) {
         offset.push(20);
       }
-
       offset.forEach((move) => {
         const xSide = Math.sign(board[pos + move]);
         if (board[pos + move] !== 7 && xSide === 0) {
@@ -129,10 +128,9 @@ const chess = {
     } else if (side === -1) {
       const offset = [-10];
       const captures = [-9, -11];
-      if (pos >= 81 && pos <= 88) {
+      if (pos >= 81 && pos <= 88 && board[pos - 10] === 0) {
         offset.push(-20);
       }
-
       offset.forEach((move) => {
         const xSide = Math.sign(board[pos + move]);
         if (board[pos + move] !== 7 && xSide !== side) {
@@ -153,39 +151,30 @@ const chess = {
     return this.board.reduce((a, b) => a + b) - 1127;
   },
 
+
   generateMoves(board, color) {
     const side = color === 'w' ? 1 : -1;
     const moves = [];
     board.forEach((square, index) => {
       if (square !== 7) {
-        const pieceObj = {
-          piece: `${this.pieces[square * side]}${this.squares[index]}`,
-          moves: [],
-        };
         switch (square * side) {
           case 1:
-            pieceObj.moves = this.generatePawnMoves(board, index);
-            moves.push(pieceObj);
+            moves.push([square, index, ...this.generatePawnMoves(board, index)]);
             break;
           case 3:
-            pieceObj.moves = this.generateKnightMoves(board, index);
-            moves.push(pieceObj);
+            moves.push([square, index, ...this.generateKnightMoves(board, index)]);
             break;
           case 4:
-            pieceObj.moves = this.generateSlidingMoves(board, index, this.bishopOffset);
-            moves.push(pieceObj);
+            moves.push([square, index, ...this.generateSlidingMoves(board, index, this.bishopOffset)]);
             break;
           case 5:
-            pieceObj.moves = this.generateSlidingMoves(board, index, this.rookOffset);
-            moves.push(pieceObj);
+            moves.push([square, index, ...this.generateSlidingMoves(board, index, this.rookOffset)]);
             break;
           case 9:
-            pieceObj.moves = this.generateSlidingMoves(board, index, this.omniOffset);
-            moves.push(pieceObj);
+            moves.push([square, index, ...this.generateSlidingMoves(board, index, this.omniOffset)]);
             break;
           case 10:
-            pieceObj.moves = this.generateKingMoves(board, index);
-            moves.push(pieceObj);
+            moves.push([square, index, ...this.generateKingMoves(board, index)]);
             break;
           default:
             break;
@@ -195,16 +184,37 @@ const chess = {
     return moves;
   },
 
+  genDirtyMoves(board, color) {
+    const piecesMoves = this.generateMoves(board, color);
+    const moves = [];
+    piecesMoves.forEach((piece) => moves.push(...piece.splice(2)));
+    return moves;
+  },
 
-  // checkForCheck(color) {
+  checkForCheck(board, defColor) {
+    const attColor = (defColor === 'w' ? 'b' : 'w');
+    const side = (defColor === 'w' ? 1 : -1);
+    const kingPos = board.findIndex((square) => square * side === 10);
+    const attacks = this.genDirtyMoves(board, attColor);
+    const filteredAttacks = attacks.filter((move) => move === kingPos);
+    return filteredAttacks.length > 0;
+  },
 
-  // },
-  // moveResInCheck(move) {
+  generateAllLegalMoves(board, moveColor) {
+    const moves = this.generateMoves(board, moveColor);
+    const cleanMoves = moves.map((piece) => piece.filter((move, index) => {
+      if (index > 1) {
+        const boardClone = [...board];
+        const [val, pos] = [...piece];
+        boardClone[pos] = 0;
+        boardClone[move] = val;
+        return !this.checkForCheck(boardClone, moveColor);
+      }
+      return true;
+    }));
+    return cleanMoves;
+  },
 
-  // },
-  // generateAllLegalMoves(color) {
-
-  // },
   // isValidMove(move) {
 
   // },
@@ -230,8 +240,10 @@ const chess = {
   // },
 };
 
-
-console.log(chess.generateMoves(chess.board, 'b'));
+console.log(chess.generateMoves(boards.checkTest, 'w'));
+console.log(' ');
+console.log(chess.generateAllLegalMoves(boards.checkTest, 'w'));
+// console.log(chess.genDirtyMovesAlt(boards.board, 'w'));
 
 
 module.exports = chess;
@@ -279,3 +291,79 @@ module.exports = chess;
 //   bishopOffset: [-16, -14, 14, 16],
 //     queenOffset: [-16, -15, -14, -1, 1, 14, 15, 16],
 // const knightOffset = [17, 13, -13, -17, 31, 29, -31, -29];
+
+// moveResInCheck(move) {
+
+// },
+// generateAllLegalMoves(board, moveColor) {
+//   // const defColor = moveColor === 'w' ? 'b' : 'w';
+//   const moves = this.generateMoves(board, moveColor);
+//   const cleanMoves = moves.map((piece) => piece.moves.filter((move) => {
+//     const boardClone = [...board];
+//     boardClone[piece.pos] = 0;
+//     boardClone[move] = piece.val;
+//     return !this.checkForCheck(boardClone, moveColor);
+//   }));
+//   return cleanMoves;
+// },
+
+// checkForCheck(board, defColor) {
+//   const attColor = (defColor === 'w' ? 'b' : 'w');
+//   const side = (defColor === 'w' ? 1 : -1);
+//   const kingPos = board.findIndex((square) => square * side === 10);
+//   const attacks = this.genDirtyMoves(board, attColor);
+//   const filteredAttacks = attacks.filter((move) => move === kingPos);
+//   return filteredAttacks.length > 0;
+// },
+
+
+// genDirtyMoves(board, color) {
+//   const piecesMoves = this.generateMoves(board, color);
+//   const moves = [];
+//   piecesMoves.forEach((piece) => moves.push(...piece.moves));
+//   return moves;
+// },
+
+// generateMoves(board, color) {
+//   const side = color === 'w' ? 1 : -1;
+//   const moves = [];
+//   board.forEach((square, index) => {
+//     if (square !== 7) {
+//       const pieceObj = {
+//         piece: `${this.pieces[square * side]}${this.squares[index]}`,
+//         pos: index,
+//         val: this.board[index],
+//         moves: [],
+//       };
+//       switch (square * side) {
+//         case 1:
+//           pieceObj.moves = this.generatePawnMoves(board, index);
+//           moves.push(pieceObj);
+//           break;
+//         case 3:
+//           pieceObj.moves = this.generateKnightMoves(board, index);
+//           moves.push(pieceObj);
+//           break;
+//         case 4:
+//           pieceObj.moves = this.generateSlidingMoves(board, index, this.bishopOffset);
+//           moves.push(pieceObj);
+//           break;
+//         case 5:
+//           pieceObj.moves = this.generateSlidingMoves(board, index, this.rookOffset);
+//           moves.push(pieceObj);
+//           break;
+//         case 9:
+//           pieceObj.moves = this.generateSlidingMoves(board, index, this.omniOffset);
+//           moves.push(pieceObj);
+//           break;
+//         case 10:
+//           pieceObj.moves = this.generateKingMoves(board, index);
+//           moves.push(pieceObj);
+//           break;
+//         default:
+//           break;
+//       }
+//     }
+//   });
+//   return moves;
+// },
