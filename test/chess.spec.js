@@ -214,26 +214,24 @@ describe('generateMoves test', () => {
   it('correctly generates all white moves in start position', () => {
     const whiteMoves = chess.generateMoves(boards.board, 'w');
     let moveCount = 0;
-    const moves = [];
     whiteMoves.forEach((piece) => {
-      moveCount += piece.moves.length;
+      moveCount += piece.length - 2;
     });
-    whiteMoves.forEach((piece) => moves.push(...piece.moves));
+    const dirtyMoves = chess.genDirtyMoves(boards.board, 'w')
     expect(moveCount).to.eql(20);
     expect(whiteMoves.length).to.eql(16);
-    expect(moves).to.eql([43, 41, 48, 46, 41, 51, 42, 52, 43, 53, 44, 54, 45, 55, 46, 56, 47, 57, 48, 58]);
+    expect(dirtyMoves).to.eql([43, 41, 48, 46, 41, 51, 42, 52, 43, 53, 44, 54, 45, 55, 46, 56, 47, 57, 48, 58]);
   });
   it('correctly generates all black moves in start position', () => {
     const blackMoves = chess.generateMoves(boards.board, 'b');
     let moveCount = 0;
-    const moves = [];
     blackMoves.forEach((piece) => {
-      moveCount += piece.moves.length;
+      moveCount += piece.length -2;
     });
-    blackMoves.forEach((piece) => moves.push(...piece.moves));
+    const dirtyMoves = chess.genDirtyMoves(boards.board, 'b')
     expect(moveCount).to.eql(20);
     expect(blackMoves.length).to.eql(16);
-    expect(moves).to.eql([71, 61, 72, 62, 73, 63, 74, 64, 75, 65, 76, 66, 77, 67, 78, 68, 73, 71, 78, 76]);
+    expect(dirtyMoves).to.eql([71, 61, 72, 62, 73, 63, 74, 64, 75, 65, 76, 66, 77, 67, 78, 68, 73, 71, 78, 76]);
   });
   it('correctly generates white moves from arbitrary position', () => {
     const whiteMoves = chess.generateMoves(boards.movementTest, 'w');
@@ -244,5 +242,57 @@ describe('generateMoves test', () => {
     const blackMoves = chess.generateMoves(boards.movementTest, 'b');
 
     expect(blackMoves.length).to.eql(14);
+  });
+});
+
+describe('generateAllLegalMoves tests', () => {
+  it('generates all moves for white in start position', () => {
+    const whiteMoves = chess.generateAllLegalMoves(boards.board, 'w');
+
+  });
+  it('generates all moves for black in start position', () => {
+    const blackMoves = chess.generateAllLegalMoves(boards.board, 'b');
+  });
+  it('generates all moves for white in arbitrary position', () => {
+    const whiteMoves = chess.generateAllLegalMoves(boards.movementTest, 'w');
+  });
+  it('generates all moves for black in arbitrary position', () => {
+    const blackMoves = chess.generateAllLegalMoves(boards.movementTest, 'b');
+  });
+  it('returns only moves that resolve white king in check', () => {
+    const whiteMoves = chess.generateAllLegalMoves(boards.board, 'w');
+  });
+  it('returns only moves that black king in check', () => {
+    const blackMoves = chess.generateAllLegalMoves(boards.board, 'b');
+  });
+  it('returns no moves when white king is in checkmate', () => {
+    const whiteMoves = chess.generateAllLegalMoves(boards.board, 'w');
+  });
+  it('returns no moves when black king in checkmate', () => {
+    const blackMoves = chess.generateAllLegalMoves(boards.board, 'b');
+  });
+});
+
+describe('isValidMove tests', () => {
+  it('returns true when a valid white move is provided', () => {
+
+  });
+  it('returns true when a valid black move is provided', () => {
+
+  });
+  it('returns false when an invalid white move is provided', () => {
+
+  });
+  it('returns false when an invalid black move is provided', () =>{
+
+  });
+});
+
+describe('checkForCheck tests', () => {
+  it('returns true when white king in check', () => {
+
+  });
+  it('returns true when black king in check', () => {
+
   });
 });
