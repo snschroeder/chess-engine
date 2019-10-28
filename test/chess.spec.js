@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 /* eslint-disable max-len */
 /* eslint-disable no-undef */
 const { expect } = require('chai');
@@ -237,12 +238,42 @@ describe('generateMoves test', () => {
   });
   it('correctly generates white moves from arbitrary position', () => {
     const whiteMoves = chess.generateMoves(boards.movementTest, 'w');
-
+    const moves = [];
+    whiteMoves.forEach((piece) => moves.push(...piece.moves));
     expect(whiteMoves.length).to.eql(15);
+    expect(moves).to.eql([
+      43, 41, 34, 23, 34, 44, 54, 64, 34, 27, 41, 51, 23, 41, 43, 54,
+      65, 43, 53, 45, 55, 47, 57, 48, 58, 52, 67, 65, 54, 58, 34, 27]);
   });
   it('correctly generates black moves from arbitrary position', () => {
     const blackMoves = chess.generateMoves(boards.movementTest, 'b');
-
+    const moves = [];
+    blackMoves.forEach((piece) => moves.push(...piece.moves));
     expect(blackMoves.length).to.eql(14);
+    expect(moves).to.eql([
+      54, 55, 97, 84, 88, 68, 57, 55, 71, 61, 75, 77, 67, 84, 73, 71, 82, 71,
+      84, 75, 66, 57, 48, 83, 72, 61, 84, 74, 84, 88, 78, 68, 58, 48, 38, 97,
+    ]);
+  });
+});
+
+describe('checkForCheck tests', () => {
+  it('returns false for black and white in start position', () => {
+    const whiteCheck = chess.checkForCheck(boards.board, 'w');
+    const blackCheck = chess.checkForCheck(boards.board, 'b');
+    expect(whiteCheck).to.be.false;
+    expect(blackCheck).to.be.false;
+  });
+  it('returns true for both white and black when their kings are in check', () => {
+    const whiteCheck = chess.checkForCheck(boards.checkTest, 'w');
+    const blackCheck = chess.checkForCheck(boards.checkTest, 'b');
+    expect(whiteCheck).to.be.true;
+    expect(blackCheck).to.be.true;
+  });
+  it('returns true for white and false for black when only one kings is in check', () => {
+    const whiteCheck = chess.checkForCheck(boards.checkTestTwo, 'w');
+    const blackCheck = chess.checkForCheck(boards.checkTestTwo, 'b');
+    expect(whiteCheck).to.be.true;
+    expect(blackCheck).to.be.false;
   });
 });
