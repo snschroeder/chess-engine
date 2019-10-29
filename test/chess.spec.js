@@ -211,44 +211,43 @@ describe('generatePawnMoves tests', () => {
   });
 });
 
-describe('generateMoves test', () => {
+describe('genDirtyMoves test', () => {
   it('correctly generates all white moves in start position', () => {
-    const whiteMoves = chess.generateMoves(boards.board, 'w');
+    const whiteMoves = chess.genDirtyMoves(boards.board, 'w');
     let moveCount = 0;
     whiteMoves.forEach((piece) => {
       moveCount += piece.length - 2;
     });
-    const dirtyMoves = chess.genDirtyMoves(boards.board, 'w')
+    const dirtyMoves = chess.genShortDirtyMoves(boards.board, 'w');
     expect(moveCount).to.eql(20);
     expect(whiteMoves.length).to.eql(16);
     expect(dirtyMoves).to.eql([43, 41, 48, 46, 41, 51, 42, 52, 43, 53, 44, 54, 45, 55, 46, 56, 47, 57, 48, 58]);
   });
   it('correctly generates all black moves in start position', () => {
-    const blackMoves = chess.generateMoves(boards.board, 'b');
+    const blackMoves = chess.genDirtyMoves(boards.board, 'b');
     let moveCount = 0;
     blackMoves.forEach((piece) => {
-      moveCount += piece.length -2;
+      moveCount += piece.length - 2;
     });
-    const dirtyMoves = chess.genDirtyMoves(boards.board, 'b')
+    const dirtyMoves = chess.genShortDirtyMoves(boards.board, 'b');
     expect(moveCount).to.eql(20);
     expect(blackMoves.length).to.eql(16);
     expect(dirtyMoves).to.eql([71, 61, 72, 62, 73, 63, 74, 64, 75, 65, 76, 66, 77, 67, 78, 68, 73, 71, 78, 76]);
   });
   it('correctly generates white moves from arbitrary position', () => {
-    const whiteMoves = chess.generateMoves(boards.movementTest, 'w');
-    const moves = [];
-    whiteMoves.forEach((piece) => moves.push(...piece.moves));
+    const whiteMoves = chess.genDirtyMoves(boards.movementTest, 'w');
+    const dirtyMoves = chess.genShortDirtyMoves(boards.movementTest, 'w');
     expect(whiteMoves.length).to.eql(15);
-    expect(moves).to.eql([
+    expect(dirtyMoves).to.eql([
       43, 41, 34, 23, 34, 44, 54, 64, 34, 27, 41, 51, 23, 41, 43, 54,
-      65, 43, 53, 45, 55, 47, 57, 48, 58, 52, 67, 65, 54, 58, 34, 27]);
+      65, 43, 53, 45, 55, 47, 57, 48, 58, 52, 67, 65, 54, 58, 34, 27,
+    ]);
   });
   it('correctly generates black moves from arbitrary position', () => {
-    const blackMoves = chess.generateMoves(boards.movementTest, 'b');
-    const moves = [];
-    blackMoves.forEach((piece) => moves.push(...piece.moves));
+    const blackMoves = chess.genDirtyMoves(boards.movementTest, 'b');
+    const dirtyMoves = chess.genShortDirtyMoves(boards.movementTest, 'b');
     expect(blackMoves.length).to.eql(14);
-    expect(moves).to.eql([
+    expect(dirtyMoves).to.eql([
       54, 55, 97, 84, 88, 68, 57, 55, 71, 61, 75, 77, 67, 84, 73, 71, 82, 71,
       84, 75, 66, 57, 48, 83, 72, 61, 84, 74, 84, 88, 78, 68, 58, 48, 38, 97,
     ]);
@@ -268,7 +267,7 @@ describe('checkForCheck tests', () => {
     expect(whiteCheck).to.be.true;
     expect(blackCheck).to.be.true;
   });
-  it('returns true for white and false for black when only one kings is in check', () => {
+  it('returns true for white and false for black when only the white king is in check', () => {
     const whiteCheck = chess.checkForCheck(boards.checkTestTwo, 'w');
     const blackCheck = chess.checkForCheck(boards.checkTestTwo, 'b');
     expect(whiteCheck).to.be.true;
@@ -276,54 +275,147 @@ describe('checkForCheck tests', () => {
   });
 });
 
-describe('generateAllLegalMoves tests', () => {
+describe('genAllPseudoLegalMoves tests', () => {
   it('generates all moves for white in start position', () => {
-    const whiteMoves = chess.generateAllLegalMoves(boards.board, 'w');
-
+    const whiteMoves = chess.genAllPseudoLegalMoves(boards.board, 'w');
+    const shortenedMoves = chess.genShortPseudoLegalMoves(boards.board, 'w');
+    let moveCount = 0;
+    whiteMoves.forEach((piece) => {
+      moveCount += piece.length - 2;
+    });
+    expect(whiteMoves.length).to.eql(16);
+    expect(moveCount).to.eql(20);
+    expect(shortenedMoves).to.eql([43, 41, 48, 46, 41, 51, 42, 52, 43, 53, 44, 54, 45, 55, 46, 56, 47, 57, 48, 58]);
   });
   it('generates all moves for black in start position', () => {
-    const blackMoves = chess.generateAllLegalMoves(boards.board, 'b');
+    const blackMoves = chess.genAllPseudoLegalMoves(boards.board, 'b');
+    const shortenedMoves = chess.genShortPseudoLegalMoves(boards.board, 'b');
+    let moveCount = 0;
+    blackMoves.forEach((piece) => {
+      moveCount += piece.length - 2;
+    });
+    expect(blackMoves.length).to.eql(16);
+    expect(moveCount).to.eql(20);
+    expect(shortenedMoves).to.eql([71, 61, 72, 62, 73, 63, 74, 64, 75, 65, 76, 66, 77, 67, 78, 68, 73, 71, 78, 76]);
   });
   it('generates all moves for white in arbitrary position', () => {
-    const whiteMoves = chess.generateAllLegalMoves(boards.movementTest, 'w');
+    const whiteMoves = chess.genAllPseudoLegalMoves(boards.movementTest, 'w');
+    const shortenedMoves = chess.genShortPseudoLegalMoves(boards.movementTest, 'w');
+    expect(whiteMoves.length).to.eql(15);
+    expect(shortenedMoves).to.eql([
+      43, 41, 34, 23, 34, 44, 54, 64, 34, 27, 41, 51, 23, 41, 43, 54,
+      65, 43, 53, 45, 55, 47, 57, 48, 58, 52, 67, 65, 54, 58, 34, 27,
+    ]);
   });
   it('generates all moves for black in arbitrary position', () => {
-    const blackMoves = chess.generateAllLegalMoves(boards.movementTest, 'b');
+    const blackMoves = chess.genAllPseudoLegalMoves(boards.movementTest, 'b');
+    const shortenedMoves = chess.genShortPseudoLegalMoves(boards.movementTest, 'b');
+    expect(blackMoves.length).to.eql(14);
+    expect(shortenedMoves).to.eql([
+      54, 55, 97, 84, 88, 68, 57, 55, 71, 61, 75, 77, 67, 84, 73, 71, 82, 71,
+      84, 75, 66, 57, 48, 83, 72, 61, 84, 74, 84, 88, 78, 68, 58, 48, 38, 97,
+    ]);
   });
   it('returns only moves that resolve white king in check', () => {
-    const whiteMoves = chess.generateAllLegalMoves(boards.board, 'w');
+    const whiteMoves = chess.genAllPseudoLegalMoves(boards.checkTestTwo, 'w');
+    const shortenedPLegalMoves = chess.genShortPseudoLegalMoves(boards.checkTestTwo, 'w');
+    expect(whiteMoves.length).to.eql(14);
+    expect(whiteMoves).to.eql([
+      [5, 21],
+      [3, 22],
+      [9, 24, 35],
+      [10, 25, 34],
+      [4, 26, 35],
+      [5, 28],
+      [1, 31],
+      [4, 32, 65],
+      [1, 33],
+      [1, 36],
+      [1, 37],
+      [1, 38],
+      [1, 42],
+      [3, 46, 65],
+    ]);
+    expect(shortenedPLegalMoves).to.eql([35, 34, 35, 65, 65]);
   });
-  it('returns only moves that black king in check', () => {
-    const blackMoves = chess.generateAllLegalMoves(boards.board, 'b');
+  it('returns only moves that resolve black king in check', () => {
+    const blackMoves = chess.genAllPseudoLegalMoves(boards.checkTest, 'b');
+    const shortenedPLegalMoves = chess.genShortPseudoLegalMoves(boards.checkTest, 'b');
+    expect(blackMoves).to.eql([
+      [-4, 61],
+      [-1, 64],
+      [-1, 65],
+      [-3, 76, 97],
+      [-1, 81],
+      [-1, 85],
+      [-1, 86],
+      [-1, 87],
+      [-5, 91],
+      [-3, 92],
+      [-9, 94],
+      [-10, 95, 84],
+      [-5, 98, 97],
+    ]);
+    expect(shortenedPLegalMoves).to.eql([97, 84, 97]);
   });
   it('returns no moves when white king is in checkmate', () => {
-    const whiteMoves = chess.generateAllLegalMoves(boards.board, 'w');
+    const whiteMoves = chess.genAllPseudoLegalMoves(boards.checkmateWhite, 'w');
+    const shortenedPLegalMoves = chess.genShortPseudoLegalMoves(boards.checkmateWhite, 'w');
+    expect(whiteMoves).to.eql([
+      [10, 25],
+      [1, 37],
+      [1, 38],
+      [1, 42],
+      [3, 46],
+    ]);
+    expect(shortenedPLegalMoves).to.eql([]);
   });
   it('returns no moves when black king in checkmate', () => {
-    const blackMoves = chess.generateAllLegalMoves(boards.board, 'b');
+    const blackMoves = chess.genAllPseudoLegalMoves(boards.checkmateBlack, 'b');
+    const shortenedPLegalMoves = chess.genShortPseudoLegalMoves(boards.checkmateBlack, 'b');
+    expect(blackMoves).to.eql([
+      [-1, 64],
+      [-3, 76],
+      [-1, 81],
+      [-1, 86],
+      [-1, 87],
+      [-5, 91],
+      [-3, 92],
+      [-10, 95],
+      [-5, 98],
+    ]);
+    expect(shortenedPLegalMoves).to.eql([]);
   });
 });
 
 describe('isValidMove tests', () => {
   it('returns true when a valid white move is provided', () => {
-
+    const whiteMove = chess.isValidMove(boards.board, 'w', 1, 33, 43);
+    expect(whiteMove).to.be.true;
   });
   it('returns true when a valid black move is provided', () => {
-
+    const blackMove = chess.isValidMove(boards.board, 'b', -3, 92, 71);
+    expect(blackMove).to.be.true;
   });
   it('returns false when an invalid white move is provided', () => {
-
+    const whiteMove = chess.isValidMove(boards.board, 'w', 10, 25, 88);
+    expect(whiteMove).to.be.false;
   });
-  it('returns false when an invalid black move is provided', () =>{
-
+  it('returns false when an invalid black move is provided', () => {
+    const blackMove = chess.isValidMove(boards.board, 'b', -9, 94, 33);
+    expect(blackMove).to.be.false;
   });
 });
 
-describe('checkForCheck tests', () => {
-  it('returns true when white king in check', () => {
 
+describe('evaluateBoard tests', () => {
+  it('returns 0 in start position', () => {
+    expect(chess.evaluateBoard(boards.board)).to.eql(0);
   });
-  it('returns true when black king in check', () => {
-
+  it('returns the correct positive value when white has a piece advantage', () => {
+    expect(chess.evaluateBoard(boards.checkmateBlack)).to.eql(19);
+  });
+  it('returns the correct negative value when black has a piece advantage', () => {
+    expect(chess.evaluateBoard(boards.checkmateWhite)).to.eql(-34);
   });
 });

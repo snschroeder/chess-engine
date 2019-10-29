@@ -1,3 +1,4 @@
+/* eslint-disable no-multi-spaces */
 /* eslint-disable max-len */
 /* eslint-disable object-property-newline */
 const boards = require('../test/test-helpers');
@@ -16,18 +17,18 @@ const chess = {
   },
 
   board: [
-    7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
-    7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
-    7, 5, 3, 4, 9, 10, 4, 3, 5, 7,
-    7, 1, 1, 1, 1, 1, 1, 1, 1, 7,
-    7, 0, 0, 0, 0, 0, 0, 0, 0, 7,
-    7, 0, 0, 0, 0, 0, 0, 0, 0, 7,
-    7, 0, 0, 0, 0, 0, 0, 0, 0, 7,
-    7, 0, 0, 0, 0, 0, 0, 0, 0, 7,
-    7, -1, -1, -1, -1, -1, -1, -1, -1, 7,
+    7,  7,  7,  7,  7,  7,   7,  7,  7, 7,
+    7,  7,  7,  7,  7,  7,   7,  7,  7, 7,
+    7,  5,  3,  4,  9,  10,  4,  3,  5, 7,
+    7,  1,  1,  1,  1,  1,   1,  1,  1, 7,
+    7,  0,  0,  0,  0,  0,   0,  0,  0, 7,
+    7,  0,  0,  0,  0,  0,   0,  0,  0, 7,
+    7,  0,  0,  0,  0,  0,   0,  0,  0, 7,
+    7,  0,  0,  0,  0,  0,   0,  0,  0, 7,
+    7, -1, -1, -1, -1, -1,  -1, -1, -1, 7,
     7, -5, -3, -4, -9, -10, -4, -3, -5, 7,
-    7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
-    7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+    7,  7,  7,  7,  7,  7,   7,  7,  7, 7,
+    7,  7,  7,  7,  7,  7,   7,  7,  7, 7,
   ],
 
   squares: {
@@ -107,36 +108,36 @@ const chess = {
   generatePawnMoves(board, pos) {
     const side = Math.sign(board[pos]);
     const moves = [];
-      let offset = [10];
-      let captures = [9, 11];
-      if (pos >= 31 && pos <= 38 && board[pos + 10] === 0) {
-        offset.push(20);
-      } else if (pos >= 81 && pos <= 88 && board[pos - 10] === 0) {
-        offset.push(20);
-      };
-      offset = offset.map((val) => val * side);
-      captures = captures.map((val) => val* side);
-      offset.forEach((move) => {
-        const xSide = Math.sign(board[pos + move]);
-        if (board[pos + move] !== 7 && xSide === 0) {
-          moves.push(pos + move);
-        }
-      });
-      captures.forEach((move) => {
-        const xSide = Math.sign(board[pos + move]);
-        if (board[pos + move] !== 7 && side !== xSide && board[pos + move] !== 0) {
-          moves.push(pos + move);
-        }
-      });
+    let offset = [10];
+    let captures = [9, 11];
+    if (pos >= 31 && pos <= 38 && board[pos + 10] === 0) {
+      offset.push(20);
+    } else if (pos >= 81 && pos <= 88 && board[pos - 10] === 0) {
+      offset.push(20);
+    }
+    offset = offset.map((val) => val * side);
+    captures = captures.map((val) => val * side);
+    offset.forEach((move) => {
+      const xSide = Math.sign(board[pos + move]);
+      if (board[pos + move] !== 7 && xSide === 0) {
+        moves.push(pos + move);
+      }
+    });
+    captures.forEach((move) => {
+      const xSide = Math.sign(board[pos + move]);
+      if (board[pos + move] !== 7 && side !== xSide && board[pos + move] !== 0) {
+        moves.push(pos + move);
+      }
+    });
     return moves;
   },
 
-  evaluateBoard() {
-    return this.board.reduce((a, b) => a + b) - 1127;
+  evaluateBoard(board) {
+    return board.reduce((a, b) => a + b) - 392;
   },
 
 
-  generateMoves(board, color) {
+  genDirtyMoves(board, color) {
     const side = color === 'w' ? 1 : -1;
     const moves = [];
     board.forEach((square, index) => {
@@ -168,8 +169,8 @@ const chess = {
     return moves;
   },
 
-  genDirtyMoves(board, color) {
-    const piecesMoves = this.generateMoves(board, color);
+  genShortDirtyMoves(board, color) {
+    const piecesMoves = this.genDirtyMoves(board, color);
     const moves = [];
     piecesMoves.forEach((piece) => moves.push(...piece.splice(2)));
     return moves;
@@ -179,13 +180,13 @@ const chess = {
     const attColor = (defColor === 'w' ? 'b' : 'w');
     const side = (defColor === 'w' ? 1 : -1);
     const kingPos = board.findIndex((square) => square * side === 10);
-    const attacks = this.genDirtyMoves(board, attColor);
+    const attacks = this.genShortDirtyMoves(board, attColor);
     const filteredAttacks = attacks.filter((move) => move === kingPos);
     return filteredAttacks.length > 0;
   },
 
-  generateAllLegalMoves(board, moveColor) {
-    const moves = this.generateMoves(board, moveColor);
+  genAllPseudoLegalMoves(board, moveColor) {
+    const moves = this.genDirtyMoves(board, moveColor);
     const cleanMoves = moves.map((piece) => piece.filter((move, index) => {
       if (index > 1) {
         const boardClone = [...board];
@@ -199,16 +200,34 @@ const chess = {
     return cleanMoves;
   },
 
-  genDirtyLegalMoves(board, moveColor) {
-    const moves = this.generateAllLegalMoves(board, moveColor);
+  genShortPseudoLegalMoves(board, moveColor) {
+    const moves = this.genAllPseudoLegalMoves(board, moveColor);
     const dirtyMoves = [];
-    moves.forEach(piece => dirtyMoves.push(...piece.splice(2)));
+    moves.forEach((piece) => dirtyMoves.push(...piece.splice(2)));
     return dirtyMoves;
   },
 
-  isValidMove(board, moveColor, move) {
-    const moves = this.genDirtyLegalMoves(board, moveColor);
-    return moves.includes(move);
+  isValidMove(board, moveColor, reqPiece, startPos, move) {
+    const side = moveColor === 'w' ? 1 : -1;
+    if (side * reqPiece < 0) {
+      return false;
+    }
+    if (board[move] === 7) {
+      return false;
+    }
+    if (move < 21 || move > 98) {
+      return false;
+    }
+    let isValid = false;
+    const moves = this.genAllPseudoLegalMoves(board, moveColor);
+    moves.forEach((piece) => {
+      if (piece[0] === reqPiece && piece[1] === startPos) {
+        if (piece.splice(2).includes(move)) {
+          isValid = true;
+        }
+      }
+    });
+    return isValid;
   },
   // turn(piece, move) {
 
@@ -237,169 +256,20 @@ const chess = {
 // console.log(chess.generateAllLegalMoves(chess.board, 'w'));
 // console.log(chess.genDirtyMovesAlt(boards.board, 'w'));
 
-console.log(chess.isValidMove(boards.board, 'w', 3));
+console.log(chess.isValidMove(boards.board, 'b', -3, 92, 71));
+console.log(chess.genAllPseudoLegalMoves(boards.board, 'b'));
 
 
 module.exports = chess;
 
-// aboard: [
-//   7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
-//   7, 7, 7, 7, 7, 5, 3, 4, 9, 10, 4, 3, 5, 7, 7,
-//   7, 7, 7, 7, 7, 1, 1, 1, 1, 1, 1, 1, 1, 7, 7,
-//   7, 7, 7, 7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7,
-//   7, 7, 7, 7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7,
-//   7, 7, 7, 7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7,
-//   7, 7, 7, 7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7,
-//   7, 7, 7, 7, 7, -1, -1, -1, -1, -1, -1, -1, -1, 7, 7,
-//   7, 7, 7, 7, 7, -5, -3, -4, -9, -10, -4, -3, -5, 7, 7,
-//   7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
-//   7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
-//   7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
-//   7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
-//   7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
-//   7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
-// ],
 
 //   squares: {
 //   a1: 21, b1: 22, c1: 23, d1: 24, e1: 25, f1: 26, g1: 27, h1: 28,
-//     a2: 31, b2: 32, c2: 33, d2: 34, e2: 35, f2: 36, g2: 37, h2: 38,
-//       a3: 41, b3: 42, c3: 43, d3: 44, e3: 45, f3: 46, g3: 47, h3: 48,
-//         a4: 51, b4: 52, c4: 53, d4: 54, e4: 55, f4: 56, g4: 57, h4: 58,
-//           a5: 61, b5: 62, c5: 63, d5: 64, e5: 65, f5: 66, g5: 67, h5: 68,
-//             a6: 71, b6: 72, c6: 73, d6: 74, e6: 75, f6: 76, g6: 77, h6: 78,
-//               a7: 81, b7: 82, c7: 83, d7: 84, e7: 85, f7: 86, g7: 87, h7: 88,
-//                 a8: 91, b8: 92, c8: 93, d8: 94, e8: 95, f8: 96, g8: 97, h8: 98,
+//   a2: 31, b2: 32, c2: 33, d2: 34, e2: 35, f2: 36, g2: 37, h2: 38,
+//   a3: 41, b3: 42, c3: 43, d3: 44, e3: 45, f3: 46, g3: 47, h3: 48,
+//   a4: 51, b4: 52, c4: 53, d4: 54, e4: 55, f4: 56, g4: 57, h4: 58,
+//   a5: 61, b5: 62, c5: 63, d5: 64, e5: 65, f5: 66, g5: 67, h5: 68,
+//   a6: 71, b6: 72, c6: 73, d6: 74, e6: 75, f6: 76, g6: 77, h6: 78,
+//   a7: 81, b7: 82, c7: 83, d7: 84, e7: 85, f7: 86, g7: 87, h7: 88,
+//   a8: 91, b8: 92, c8: 93, d8: 94, e8: 95, f8: 96, g8: 97, h8: 98,
 //   },
-// squares: {
-//   20: 'a1', 21: 'b1', 22: 'c1', 23: 'd1', 24: 'e1', 25: 'f1', 26: 'g1', 27: 'h1',
-//     35: 'a2', 36: 'b2', 37: 'c2', 38: 'd2', 39: 'e2', 40: 'f2', 41: 'g2', 42: 'h2',
-// 50: 'a3', 51: 'b3', 52: 'c3', 53: 'd3', 54: 'e3', 55: 'f3', 56: 'g3', 57: 'h3',
-// 65: 'a4', 66: 'b4', 67: 'c4', 68: 'd4', 69: 'e4', 70: 'f4', 71: 'g4', 72: 'h4',
-// 80: 'a5', 81: 'b5', 82: 'c5', 83: 'd5', 84: 'e5', 85: 'f5', 86: 'g5', 87: 'h5',
-// 95: 'a6', 96: 'b6', 97: 'c6', 98: 'd6', 99: 'e6', 100: 'f6', 101: 'g6', 102: 'h6',
-// 110: 'a7', 111: 'b7', 112: 'c7', 113: 'd7', 114: 'e7', 115: 'f7', 116: 'g7', 117: 'h7',
-// 125: 'a8', 126: 'b8', 127: 'c8', 128: 'd8', 129: 'e8', 130: 'f8', 131: 'g8', 132: 'h8',
-//   },
-
-// rookOffset: [-15, -1, 1, 15],
-//   bishopOffset: [-16, -14, 14, 16],
-//     queenOffset: [-16, -15, -14, -1, 1, 14, 15, 16],
-// const knightOffset = [17, 13, -13, -17, 31, 29, -31, -29];
-
-// moveResInCheck(move) {
-
-// },
-// generateAllLegalMoves(board, moveColor) {
-//   // const defColor = moveColor === 'w' ? 'b' : 'w';
-//   const moves = this.generateMoves(board, moveColor);
-//   const cleanMoves = moves.map((piece) => piece.moves.filter((move) => {
-//     const boardClone = [...board];
-//     boardClone[piece.pos] = 0;
-//     boardClone[move] = piece.val;
-//     return !this.checkForCheck(boardClone, moveColor);
-//   }));
-//   return cleanMoves;
-// },
-
-// checkForCheck(board, defColor) {
-//   const attColor = (defColor === 'w' ? 'b' : 'w');
-//   const side = (defColor === 'w' ? 1 : -1);
-//   const kingPos = board.findIndex((square) => square * side === 10);
-//   const attacks = this.genDirtyMoves(board, attColor);
-//   const filteredAttacks = attacks.filter((move) => move === kingPos);
-//   return filteredAttacks.length > 0;
-// },
-
-
-// genDirtyMoves(board, color) {
-//   const piecesMoves = this.generateMoves(board, color);
-//   const moves = [];
-//   piecesMoves.forEach((piece) => moves.push(...piece.moves));
-//   return moves;
-// },
-
-// generateMoves(board, color) {
-//   const side = color === 'w' ? 1 : -1;
-//   const moves = [];
-//   board.forEach((square, index) => {
-//     if (square !== 7) {
-//       const pieceObj = {
-//         piece: `${this.pieces[square * side]}${this.squares[index]}`,
-//         pos: index,
-//         val: this.board[index],
-//         moves: [],
-//       };
-//       switch (square * side) {
-//         case 1:
-//           pieceObj.moves = this.generatePawnMoves(board, index);
-//           moves.push(pieceObj);
-//           break;
-//         case 3:
-//           pieceObj.moves = this.generateKnightMoves(board, index);
-//           moves.push(pieceObj);
-//           break;
-//         case 4:
-//           pieceObj.moves = this.generateSlidingMoves(board, index, this.bishopOffset);
-//           moves.push(pieceObj);
-//           break;
-//         case 5:
-//           pieceObj.moves = this.generateSlidingMoves(board, index, this.rookOffset);
-//           moves.push(pieceObj);
-//           break;
-//         case 9:
-//           pieceObj.moves = this.generateSlidingMoves(board, index, this.omniOffset);
-//           moves.push(pieceObj);
-//           break;
-//         case 10:
-//           pieceObj.moves = this.generateKingMoves(board, index);
-//           moves.push(pieceObj);
-//           break;
-//         default:
-//           break;
-//       }
-//     }
-//   });
-//   return moves;
-// },
-  // generatePawnMovesAlt(board, pos) {
-  //   const side = Math.sign(board[pos]);
-  //   const moves = [];
-  //   if (side === 1) {
-  //     const offset = [10];
-  //     const captures = [9, 11];
-  //     if (pos >= 31 && pos <= 38 && board[pos + 10] === 0) {
-  //       offset.push(20);
-  //     }
-  //     offset.forEach((move) => {
-  //       const xSide = Math.sign(board[pos + move]);
-  //       if (board[pos + move] !== 7 && xSide === 0) {
-  //         moves.push(pos + move);
-  //       }
-  //     });
-  //     captures.forEach((move) => {
-  //       const xSide = Math.sign(board[pos + move]);
-  //       if (board[pos + move] !== 7 && side !== xSide && board[pos + move] !== 0) {
-  //         moves.push(pos + move);
-  //       }
-  //     });
-  //   } else if (side === -1) {
-  //     const offset = [-10];
-  //     const captures = [-9, -11];
-  //     if (pos >= 81 && pos <= 88 && board[pos - 10] === 0) {
-  //       offset.push(-20);
-  //     }
-  //     offset.forEach((move) => {
-  //       const xSide = Math.sign(board[pos + move]);
-  //       if (board[pos + move] !== 7 && xSide !== side) {
-  //         moves.push(pos + move);
-  //       }
-  //     });
-  //     captures.forEach((move) => {
-  //       const xSide = Math.sign(board[pos + move]);
-  //       if (board[pos + move] !== 7 && side !== xSide && board[pos + move] !== 0) {
-  //         moves.push(pos + move);
-  //       }
-  //     });
-  //   }
-  //   return moves;
-  // },
