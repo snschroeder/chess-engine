@@ -229,9 +229,14 @@ const chess = {
     });
     return isValid;
   },
-  // turn(piece, move) {
-
-  // },
+  turn(board, color, reqPiece, startPos, move) {
+    if (color !== this.currentTurn[0]) {
+      return `Not ${color === 'w' ? 'white' : 'black'}'s turn`;
+    }
+    if(this.isValidMove(board, color, reqPiece, startPos, move)) {
+      return `That is not a valid move`;
+    }
+  },
   // undo {
 
   // },
