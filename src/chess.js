@@ -200,6 +200,10 @@ const chess = {
     return cleanMoves;
   },
 
+  // genAllLegalMoves(board, moveColor) {
+
+  // },
+
   genShortPseudoLegalMoves(board, moveColor) {
     const moves = this.genAllPseudoLegalMoves(board, moveColor);
     const dirtyMoves = [];
@@ -229,13 +233,31 @@ const chess = {
     });
     return isValid;
   },
-  turn(board, color, reqPiece, startPos, move) {
+
+  // makeMove(board, moveColor, reqPiece, startPos, move) {
+
+  // },
+
+  turn(color, reqPiece, startPos, move) {
     if (color !== this.currentTurn[0]) {
       return `Not ${color === 'w' ? 'white' : 'black'}'s turn`;
     }
-    if(this.isValidMove(board, color, reqPiece, startPos, move)) {
-      return `That is not a valid move`;
+    if (!this.isValidMove(this.board, color, reqPiece, startPos, move)) {
+      return 'That is not a valid move';
     }
+    const storedPiece = this.board[move];
+    this.board[startPos] = 0;
+    this.board[move] = reqPiece;
+
+    const hist = {
+      moved: reqPiece,
+      from: startPos,
+      to: move,
+      cap: storedPiece,
+    };
+
+    this.history.push(hist);
+    this.currentTurn.reverse();
   },
   // undo {
 
@@ -263,6 +285,11 @@ const chess = {
 
 console.log(chess.isValidMove(boards.board, 'b', -3, 92, 71));
 console.log(chess.genAllPseudoLegalMoves(boards.board, 'b'));
+chess.turn('w', 1, 34, 54);
+chess.turn('b', -1, 83, 63);
+console.log(chess.board[54]);
+console.log(chess.board[34]);
+console.log(chess.history);
 
 
 module.exports = chess;
